@@ -1,0 +1,27 @@
+"""rules_reverse_engineering — a small bzlmod toolkit for binary reverse engineering.
+
+Ghidra is not a Bazel library; it is a large JVM tool brought in via Nix (see
+//flake.nix). Bazel's job here is only to provide a hermetic, reproducible
+harness for driving Ghidra's headless command line, plus a handful of
+objdump-based scanners — so this module stays tiny and application-agnostic.
+"""
+
+module(
+    name = "rules_reverse_engineering",
+    version = "0.1.0",
+    compatibility_level = 1,
+)
+
+# Native sh_* rules moved out of Bazel core; load them from rules_shell.
+bazel_dep(name = "rules_shell", version = "0.6.1")
+bazel_dep(name = "rules_python", version = "1.5.3")
+
+# rules_nixpkgs lets Bazel import Nix-built derivations as Bazel targets.
+# Registered (pinned) so the integration point exists and is documented — but
+# NO nix_repo / nixpkgs_package is declared here. Declaring one would force
+# Bazel to evaluate Nix at fetch time, which fails on machines without `nix`
+# and would break `bazel build //...` for everyone. Instead, the Ghidra harness
+# is a plain sh_binary that shells out to the `nix` CLI at run time, carrying
+# flake.nix / flake.lock as the pinned source of truth. This keeps the build
+# graph evaluable everywhere; only the run target needs `nix` present.
+bazel_dep(name = "rules_nixpkgs_core", version = "0.13.0")

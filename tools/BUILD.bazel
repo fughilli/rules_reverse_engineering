@@ -1,0 +1,18 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+# objdump-based scanners. They shell out to `$OBJDUMP` (default `objdump`); set
+# it to a target-architecture objdump when analyzing non-host blobs.
+[
+    py_binary(
+        name = name,
+        srcs = ["%s.py" % name],
+        main = "%s.py" % name,
+    )
+    for name in [
+        "mmio_scan",
+        "xref_callers",
+        "safety_scan",
+    ]
+]

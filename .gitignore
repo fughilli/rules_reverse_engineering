@@ -1,0 +1,5 @@
+/bazel-*
+/out/
+__pycache__/
+*.pyc
+.direnv/

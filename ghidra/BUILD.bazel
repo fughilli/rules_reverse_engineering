@@ -1,0 +1,39 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+# Drive Ghidra's headless analyzer:
+#   bazel run //ghidra:analyze_headless -- <analyzeHeadless args>
+#
+# The wrapper reads flake.nix from BUILD_WORKSPACE_DIRECTORY at run time and
+# shells out to `nix`, so `bazel build //...` stays green even without `nix`
+# present. flake.nix / flake.lock are carried as data for hermeticity and so
+# `bazel query` can see the dependency.
+sh_binary(
+    name = "analyze_headless",
+    srcs = ["analyze_headless.sh"],
+    data = ["//:flake.nix"],
+)
+
+# One-shot pass over a static-library blob (extract -> import -> analyze ->
+# export MMIO + decompile matching functions). See the script header.
+sh_binary(
+    name = "analyze_lib",
+    srcs = ["analyze_lib.sh"],
+    data = [
+        "//:flake.nix",
+        ":scripts",
+    ],
+)
+
+# Interactive Ghidra shell (nix develop).
+sh_binary(
+    name = "shell",
+    srcs = ["shell.sh"],
+    data = ["//:flake.nix"],
+)
+
+filegroup(
+    name = "scripts",
+    srcs = glob(["scripts/*.py"]),
+)

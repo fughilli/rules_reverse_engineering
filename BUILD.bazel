@@ -1,0 +1,3 @@
+# Carry flake.nix as a visible source so the Ghidra harness (which reads it at
+# run time) can depend on it and `bazel query` sees the edge.
+exports_files(["flake.nix"])
