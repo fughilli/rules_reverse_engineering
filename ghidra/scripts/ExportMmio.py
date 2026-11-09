@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Ghidra headless post-script: export every observed MMIO register access.
 #
 # Emits CSV rows (function,insn_addr,access,target_addr,mnemonic,text) for each
